@@ -9,7 +9,7 @@ Original file is located at
 
 import tensorflow as tf
 import numpy as np
-from tensorflow.keras.layers import Layer
+from keras.layers import Layer
 
 """# Custom layers"""
 
