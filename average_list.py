@@ -1,5 +1,7 @@
 import numpy as np
-import skimage.measure
+
+def _average_pooling(arr):
+    return np.array([np.mean(arr[i:i + 2]) for i in range(0, len(arr), 2)])
 
 class EverageList:
     def __init__(self, len, dtype=np.float32):
@@ -24,7 +26,7 @@ class EverageList:
             if self.data_idx == self.data_len:
                 self.data_idx //= 2
                 self.data_idx - 1
-                self.data[:self.data_len // 2] = skimage.measure.block_reduce(self.data, 2, np.mean)
+                self.data[:self.data_len // 2] = _average_pooling(self.data)
                 self.data[self.data_len // 2:] = 0
                 self.buffer_len *= 2
                 self.buffer = np.zeros([self.buffer_len], dtype=np.float32)

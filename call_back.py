@@ -14,8 +14,8 @@ class CustomCallback(Callback):
             self.loss_data = pickle.loads(data)
         else:
             self.loss_data = EverageList(10000)
-        fig = plt.figure()
-        self.ax = fig.add_subplot(111)
+        # fig = plt.figure()
+        # self.ax = fig.add_subplot(111)
         super().__init__()
 
     def on_batch_end(self, epoch, logs=None):
@@ -26,13 +26,13 @@ class CustomCallback(Callback):
         with open(self.file_name, 'wb') as f:
             f.write(data)
 
-        self.ax.cla()
-        # self.ax.set_xscale('log')
-        self.ax.set_yscale('log')
-        self.ax.set_xlabel("Iterations")
-        self.ax.set_ylabel("Loss")
-        self.ax.plot(self.loss_data.get_range(), self.loss_data.get_data(), "r-", linewidth=0.2)
-        plt.draw()
-        plt.pause(0.01)
+        # self.ax.cla()
+        # # self.ax.set_xscale('log')
+        # self.ax.set_yscale('log')
+        # self.ax.set_xlabel("Iterations")
+        # self.ax.set_ylabel("Loss")
+        # self.ax.plot(self.loss_data.get_range(), self.loss_data.get_data(), "r-", linewidth=0.2)
+        # plt.draw()
+        # plt.pause(0.01)
 
     
