@@ -40,7 +40,8 @@ class Dataset(Sequence):
 
         self.songs = np.append(self.songs, np.zeros([s_size * batch_size]))
 
-        self.shufle = np.random.shuffle(np.arange(self.data_len))
+        self.shufle = np.arange(self.data_len)
+        np.random.shuffle(self.shufle)
 
         Thread(target=self._generate_new).start()
 
