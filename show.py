@@ -26,7 +26,7 @@ data = loss_data.get_data()
 ax.set_yscale('log')
 
 
-ax.plot(loss_data.get_range(), data + 1, "r-", linewidth=0.2)
+ax.plot(loss_data.get_range(), data, "r-", linewidth=0.2)
 # ax.plot(range(len(lhm)), lhm, "b-", linewidth=1)
 # ax.plot(range(len(ltm)), ltm, "y-", linewidth=1)
 # ax.plot(cicles_ends[0], cicles_ends[1], "g.")
