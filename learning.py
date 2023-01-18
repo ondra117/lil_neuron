@@ -18,7 +18,7 @@ import math
 
 s_size = 16384 * (24 // 2)
 steps_per_epoch = 10
-steps = 100
+steps = 40
 noise_ratio = 0.7
 batch_size=5
 

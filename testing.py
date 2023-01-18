@@ -15,6 +15,7 @@ import datetime
 
 s_size = 16384 * (24 // 2)
 steps_per_epoch = 10
+steps = 40
 
 # model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single")
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single")
@@ -28,7 +29,7 @@ model.load_weights("model.h5")
 
 model.summary()
 
-dataset = Dataset([1], s_size=s_size, steps=100, batch_size=1, noise_ratio=0.7)
+dataset = Dataset([1], s_size=s_size, steps=steps, batch_size=1, noise_ratio=0.7)
 
 sound = dataset.songs
 noise = np.random.normal(0.0, 1, size=sound.shape[0])
