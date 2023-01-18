@@ -23,8 +23,12 @@ class CustomCallback(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         data = pickle.dumps(self.loss_data)
+        
         with open(self.file_name, 'wb') as f:
             f.write(data)
+
+        with open("epoch.txt", "w") as f:
+            print(epoch, file=f, end="")
 
         # self.ax.cla()
         # # self.ax.set_xscale('log')

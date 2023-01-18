@@ -33,6 +33,12 @@ model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, 
 
 if os.path.exists('model.h5'): model.load_weights('model.h5')
 
+initial_epoch = 0
+
+if os.path.exists('epoch.h5'):
+    with open("epoch.txt", "r") as f:
+        initial_epoch = int(f.read())
+
 opt = keras.optimizers.Adam(learning_rate=0.000_01) #0.000_01
 
 loss = ScatterLoss(s_size, steps, noise_ratio)
@@ -46,5 +52,5 @@ dataset = Dataset([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
 
 epochs = len(dataset) // steps_per_epoch
 
-history = model.fit(dataset, epochs=epochs, steps_per_epoch=steps_per_epoch, initial_epoch=0, shuffle=True, callbacks=[CustomCallback(chackpoint=True), ModelCheckpoint(filepath='model.h5', save_best_only=False, save_weights_only=True, save_freq='epoch')])
+history = model.fit(dataset, epochs=epochs, steps_per_epoch=steps_per_epoch, initial_epoch=initial_epoch, shuffle=False, callbacks=[CustomCallback(chackpoint=True), ModelCheckpoint(filepath='model.h5', save_best_only=False, save_weights_only=True, save_freq='epoch')])
 
