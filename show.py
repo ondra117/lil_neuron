@@ -25,7 +25,7 @@ data = loss_data.get_data()
 
 ax.set_yscale('log')
 
-
+print(data[-1])
 ax.plot(loss_data.get_range(), data, "r-", linewidth=0.2)
 # ax.plot(range(len(lhm)), lhm, "b-", linewidth=1)
 # ax.plot(range(len(ltm)), ltm, "y-", linewidth=1)

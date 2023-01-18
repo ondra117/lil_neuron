@@ -28,7 +28,7 @@ batch_size=5
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single")
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single")
 
-model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single", attention = "Polarized", dropout = True, dropout_rate = 0.2)
+model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single", attention = "Polarized", dropout = True, dropout_rate = 0.2, sub=False)
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Polarized", dropout = True, dropout_rate = 0.2)
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single", attention = "Polarized", dropout = True, dropout_rate = 0.2)
 
@@ -42,10 +42,10 @@ if os.path.exists('epoch.h5'):
 
 opt = keras.optimizers.Adam(learning_rate=0.000_01) #0.000_01
 
-loss = ScatterLoss(s_size, steps, noise_ratio)
-# loss = combined_loss
+# loss = ScatterLoss(s_size, steps, noise_ratio)
+loss = "MSE"
 
-model.compile(loss="MSE", optimizer=opt)
+model.compile(loss=loss, optimizer=opt)
 
 model.summary()
 

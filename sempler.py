@@ -4,27 +4,36 @@ from keras.utils import Sequence
 from threading import Thread, Lock
 from time import sleep
 
-def _get_sample(idx, s_size, data, movs, steps, noise_ratio):
+def _get_sample(idx, s_size, data, movs, steps, noise_ratio, orig):
 
     sound = data[idx * movs:idx * movs + s_size]
-    noise = np.random.normal(0.0, 1, size=s_size)
+    first_noise = np.random.normal(0.0, 1, size=s_size)
+    noise = first_noise[:]
 
     for d in range(1, steps):
         noise[d * movs:] += np.random.normal(0.0, 1, size=s_size - d * movs)
 
-    noise /= np.abs(noise).max()
+    norm = np.abs(noise).max()
+    noise /= norm
 
     samples = noise * (noise_ratio) + sound * (1 - noise_ratio)
 
-    return samples.reshape([-1, 1]), noise.reshape([-1, 1])
+    if orig:
+        out = sound
+    else:
+        out = first_noise / norm
+        out *= noise_ratio
+
+    return samples.reshape([-1, 1]), out.reshape([-1, 1])
 
 class Dataset(Sequence):
-    def __init__(self, songs, s_size=16384 * 24, steps=10, batch_size=1, noise_ratio=0.5, random_seed=0):
+    def __init__(self, songs, s_size=16384 * 24, steps=10, batch_size=1, noise_ratio=0.5, random_seed=0, orig=False):
         np.random.seed(random_seed)
         self.s_size = s_size
         self.steps = steps
         self.batch_size = batch_size
         self.noise_ratio = noise_ratio
+        self.orig = orig
         self.movs = s_size // steps
         self.idx = 0
         self.X = np.empty([batch_size, s_size, 1], dtype=np.float32)
@@ -53,7 +62,7 @@ class Dataset(Sequence):
             if not self.generate:
                 start = self.shufle[self.idx * self.batch_size]
                 for idx in range(self.batch_size):
-                    self.X[idx], self.Y[idx] = _get_sample(start + idx, self.s_size, self.songs, self.movs, self.steps, self.noise_ratio)
+                    self.X[idx], self.Y[idx] = _get_sample(start + idx, self.s_size, self.songs, self.movs, self.steps, self.noise_ratio, orig=self.orig)
                 self.generate = True
             sleep(0.00001)
 

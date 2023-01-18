@@ -271,7 +271,8 @@ class DiffOutputLayer(Layer):
 def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merge_filter_size = 5, 
                source_names = ["bass", "drums", "other", "vocals"], num_channels = 1, output_filter_size = 1,
                padding = "same", input_size = 16384 * 4, context = False, upsampling_type = "learned",
-               output_activation = "linear", output_type = "difference", attention = "False", dropout = False, dropout_rate = 0.2):
+               output_activation = "linear", output_type = "difference", attention = "False", dropout = False, 
+               dropout_rate = 0.2, sub = False):
   
   # `enc_outputs` stores the downsampled outputs to re-use during upsampling.
   enc_outputs = []
@@ -352,6 +353,8 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
   
   elif output_type == "single":
     X = tf.keras.layers.Conv1D(num_channels, output_filter_size, padding= padding, name="single_out")(X)
+    if sub:
+      X = inp - X
   else:
     # Difference Output
     cropped_input = CropLayer(X, False, name="crop_layer_"+str(num_layers+1))(inp)
