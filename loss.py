@@ -41,11 +41,11 @@ class ScatterLoss(Loss):
 
     def __call__(self, y_true, y_pred, sample_weight):
         xd = y_pred - y_true - self.interval
-        p_side = tf.math.maximum(0.0, xd) / (xd)
+        p_side = tf.where(xd > 0, tf.ones_like(xd), tf.zeros_like(xd)) #tf.math.maximum(0.0, xd) / (xd)
         p_side *= tf.math.pow(xd, 2)
 
         dx = y_true - y_pred - self.interval
-        l_side = tf.math.maximum(0.0, dx) / (dx)
+        l_side = tf.where(dx > 0, tf.ones_like(dx), tf.zeros_like(dx)) #tf.math.maximum(0.0, dx) / (dx)
         l_side *= tf.math.pow(dx, 2)
 
         loss = tf.reduce_sum(p_side + l_side, 0)
