@@ -4,27 +4,51 @@ from keras.utils import Sequence
 from threading import Thread, Lock
 from time import sleep
 
+# def _get_sample(idx, s_size, data, movs, steps, noise_ratio, orig=False):
+
+#     sound = data[idx * movs:idx * movs + s_size]
+#     first_noise = np.random.normal(0.0, 1, size=s_size)
+#     noise = first_noise[:]
+
+#     for d in range(1, steps):
+#         noise[d * movs:] += np.random.normal(0.0, 1, size=s_size - d * movs)
+
+#     norm = np.abs(noise).max()
+#     noise /= norm
+
+#     samples = noise * (noise_ratio) + sound * (1 - noise_ratio)
+
+#     if orig:
+#         out = sound
+#     else:
+#         out = first_noise / norm
+#         out *= noise_ratio
+
+#     return samples.reshape([-1, 1]), out.reshape([-1, 1])
+
+
 def _get_sample(idx, s_size, data, movs, steps, noise_ratio, orig=False):
 
     sound = data[idx * movs:idx * movs + s_size]
-    first_noise = np.random.normal(0.0, 1, size=s_size)
-    noise = first_noise[:]
+    noise = np.random.normal(0.0, 1, size=s_size)
+    noise /= np.abs(noise).max()
 
-    for d in range(1, steps):
-        noise[d * movs:] += np.random.normal(0.0, 1, size=s_size - d * movs)
+    samples = np.zeros_like(sound)
 
-    norm = np.abs(noise).max()
-    noise /= norm
-
-    samples = noise * (noise_ratio) + sound * (1 - noise_ratio)
+    for d in range(steps):
+        start = d * movs
+        end = start + movs
+        noise_volium = (d + 1) / steps
+        noise[start:end] *= noise_volium
+        samples[start:end] = sound[start:end] * (1 - noise_volium) + noise[start:end]
 
     if orig:
         out = sound
     else:
-        out = first_noise / norm
-        out *= noise_ratio
+        out = noise
 
     return samples.reshape([-1, 1]), out.reshape([-1, 1])
+
 
 class Dataset(Sequence):
     def __init__(self, songs, s_size=16384 * 24, steps=10, batch_size=1, noise_ratio=0.5, random_seed=0, orig=False):
@@ -84,13 +108,13 @@ from time import time, sleep
 if __name__ == '__main__':
     t = time()
     dataset = Dataset([0, 1], s_size=16384 * 12, steps=100, batch_size=1, noise_ratio=0.7)
-    for i in range(10):
-        sleep(1)
-        t = time()
-        dataset[0]
-        print(time() - t)
+    # for i in range(10):
+    #     sleep(1)
+    #     t = time()
+    #     dataset[0]
+    #     print(time() - t)
+    wavfile.write(f"t.wav", 44000, (dataset[0][0].reshape([-1]) * 32767).astype(np.int16))
     exit()
-    # wavfile.write(f"t.wav", 44000, (dataset[5000][0].reshape([-1]) * 32767).astype(np.int16))
     
     import matplotlib.pyplot as plt
     fig = plt.figure()
