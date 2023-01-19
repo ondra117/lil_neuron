@@ -4,7 +4,7 @@ from keras.utils import Sequence
 from threading import Thread, Lock
 from time import sleep
 
-def _get_sample(idx, s_size, data, movs, steps, noise_ratio, orig):
+def _get_sample(idx, s_size, data, movs, steps, noise_ratio, orig=False):
 
     sound = data[idx * movs:idx * movs + s_size]
     first_noise = np.random.normal(0.0, 1, size=s_size)
