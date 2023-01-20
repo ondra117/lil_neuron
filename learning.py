@@ -49,13 +49,14 @@ model.compile(loss=loss, optimizer=opt)
 
 model.summary()
 
+
+c1 = CustomCallback(chackpoint=True)
+c2 = ModelCheckpoint(filepath='model.h5', save_best_only=False, save_weights_only=True, save_freq='epoch')
+
 dataset = Dataset(list(range(110)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True)
 
 epochs = len(dataset) // steps_per_epoch
 print(f"data: {(len(dataset) * batch_size):_}")
-
-c1 = CustomCallback(chackpoint=True)
-c2 = ModelCheckpoint(filepath='model.h5', save_best_only=False, save_weights_only=True, save_freq='epoch')
 
 model.fit(dataset, epochs=epochs, steps_per_epoch=steps_per_epoch, initial_epoch=initial_epoch, shuffle=False, callbacks=[c1, c2])
 
