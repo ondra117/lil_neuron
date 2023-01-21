@@ -28,7 +28,7 @@ batch_size=5
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single")
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single")
 
-model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single", attention = "Polarized", dropout = True, dropout_rate = 0.2, sub=True)
+model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single", attention = "False", dropout = True, dropout_rate = 0.2, sub=True)
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Polarized", dropout = True, dropout_rate = 0.2)
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single", attention = "Polarized", dropout = True, dropout_rate = 0.2)
 
@@ -40,7 +40,7 @@ if os.path.exists('epoch.h5'):
     with open("epoch.txt", "r") as f:
         initial_epoch = int(f.read())
 
-opt = keras.optimizers.Adam(learning_rate=0.001) #0.000_01
+opt = keras.optimizers.Adam(learning_rate=0.000_1) #0.000_01
 
 loss = ScatterLoss(s_size, steps, noise_ratio)
 # loss = "MSE"
