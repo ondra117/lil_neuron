@@ -271,7 +271,7 @@ class DiffOutputLayer(Layer):
 def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merge_filter_size = 5, 
                source_names = ["bass", "drums", "other", "vocals"], num_channels = 1, output_filter_size = 1,
                padding = "same", input_size = 16384 * 4, context = False, upsampling_type = "learned",
-               output_activation = "linear", output_type = "difference", attention = "False", dropout = False, 
+               output_activation = "linear", output_type = "difference", attention = "False", attention_res = False, dropout = False, 
                dropout_rate = 0.2, sub = False):
   
   # `enc_outputs` stores the downsampled outputs to re-use during upsampling.
@@ -328,9 +328,18 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
     c_layer = CropLayer(X, False, name="crop_layer_"+str(i))(enc_outputs[-i-1])
 
     if attention == "Normal":
-        c_layer = SelfAttention(name="Attention_"+str(i))(c_layer)
+        a_layer = SelfAttention(name="Attention_"+str(i))(c_layer)
+        if attention_res:
+          c_layer += a_layer
+        else:
+          c_layer = a_layer
+
     elif attention == "Polarized":
-        c_layer = PolarizedSelfAttention(name="Pol_Attention_"+str(i))(c_layer)
+        a_layer = PolarizedSelfAttention(name="Pol_Attention_"+str(i))(c_layer)
+        if attention_res:
+          c_layer += a_layer
+        else:
+          c_layer = a_layer
 
     X = tf.keras.layers.Concatenate(axis=2, name="concatenate_"+str(i))([X, c_layer]) 
 
@@ -381,6 +390,7 @@ params = {
   "output_activation": "linear",        # "linear" or "tanh"
   "output_type": "difference",          # "direct" or "single" or "difference" 
   "attention": "False",                 # "False" or "Normal" or "Polarized"
+  "attention_res": False,
   "dropout": False,
   "dropout_rate": 0.2
 }
