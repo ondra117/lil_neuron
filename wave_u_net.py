@@ -296,8 +296,8 @@ class DiffOutputLayer(Layer):
 def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merge_filter_size = 5, 
                source_names = ["bass", "drums", "other", "vocals"], num_channels = 1, output_filter_size = 1,
                padding = "same", input_size = 16384 * 4, context = False, upsampling_type = "learned",
-               output_activation = "linear", output_type = "difference", attention = "False", attention_res = False, dropout = False, 
-               dropout_rate = 0.2, sub = False):
+               output_activation = "linear", output_type = "difference", attention = "False", attention_res = False,
+               dropout = "False", dropout_rate = 0.2, sub = False):
   
   # `enc_outputs` stores the downsampled outputs to re-use during upsampling.
   enc_outputs = []
@@ -314,7 +314,7 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
                           padding=padding, name="Down_Conv_"+str(i))(X)
     X = tf.keras.layers.LeakyReLU(name="Down_Conv_Activ_"+str(i))(X)
 
-    if dropout:
+    if dropout == "Full":
       X = tf.keras.layers.Dropout(rate=dropout_rate, name="Down_Dropout_"+str(i))(X)
 
     enc_outputs.append(X)
@@ -327,7 +327,7 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
                           padding=padding, name="Down_Conv_"+str(num_layers))(X)
   X = tf.keras.layers.LeakyReLU(name="Down_Conv_Activ_"+str(num_layers))(X)
 
-  if dropout:
+  if dropout == "Full":
     X = tf.keras.layers.Dropout(rate=dropout_rate, name="Down_Dropout_"+str(num_layers))(X)
 
 
@@ -377,13 +377,16 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
                             padding=padding, name="Up_Conv_"+str(i))(X)
     X = tf.keras.layers.LeakyReLU(name="Up_Conv_Activ_"+str(i))(X)
 
-    if dropout:
+    if dropout == "Full":
       X = tf.keras.layers.Dropout(rate=dropout_rate, name="Up_Dropout_"+str(i))(X)
 
 
   c_layer = CropLayer(X, False, name="crop_layer_"+str(num_layers))(inp)
   X = tf.keras.layers.Concatenate(axis=2, name="concatenate_"+str(num_layers))([X, c_layer]) 
   X = AudioClipLayer(name="audio_clip_"+str(0))(X)
+
+  if dropout == "Last":
+    X = tf.keras.layers.Dropout(rate=dropout_rate, name="Dropout_Last")(X)
 
   if output_type == "direct":
     X = IndependentOutputLayer(source_names, num_channels, output_filter_size, padding=padding, name="independent_out")(X)
@@ -417,9 +420,9 @@ params = {
   "upsampling_type": "learned",         # "learned" or "linear"
   "output_activation": "linear",        # "linear" or "tanh"
   "output_type": "difference",          # "direct" or "single" or "difference" 
-  "attention": "False",                 # "False" or "Normal" or "Polarized"
+  "attention": "False",                 # "False" or "Normal" or "Polarized" or "Gate"
   "attention_res": False,
-  "dropout": False,
+  "dropout": "False",                     # "False" or "Full" or "Last"
   "dropout_rate": 0.2
 }
 
