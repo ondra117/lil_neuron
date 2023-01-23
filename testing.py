@@ -48,9 +48,9 @@ t = 0
 gt = 0
 i = 0
 while i * dataset.movs + s_size < sound.shape[1]:
-    print(f"{i * dataset.movs + s_size} / {sound.shape[1]} | ETA: {datetime.timedelta(seconds=(sound.shape[1] - (i * dataset.movs + s_size)) / dataset.movs * gt)}")
+    print(f"{i * dataset.movs + s_size} / {sound.shape[1]} | ETA: {datetime.timedelta(seconds=(sound.shape[1] - (i * dataset.movs + s_size)) / dataset.movs * gt)}", end="\r")
     t = time()
-    noise = model.predict(sound[:, i * dataset.movs:i * dataset.movs + s_size, :])
+    noise = model.predict(sound[:, i * dataset.movs:i * dataset.movs + s_size, :], verbose = 0)
     sound[:, i * dataset.movs:i * dataset.movs + s_size, :] -= noise
     t = time() - t
     gt += t

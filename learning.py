@@ -40,7 +40,7 @@ if os.path.exists('epoch.h5'):
     with open("epoch.txt", "r") as f:
         initial_epoch = int(f.read())
 
-opt = keras.optimizers.Adam(learning_rate=0.000_1) #0.000_01
+opt = keras.optimizers.Adam(learning_rate=0.000_05) #0.000_01
 
 loss = ScatterLoss(s_size, steps, noise_ratio)
 # loss = "MSE"

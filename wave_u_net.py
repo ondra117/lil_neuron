@@ -92,6 +92,31 @@ class PolarizedSelfAttention(tf.keras.layers.Layer):
 
     return output
 
+class AttentionGate(tf.keras.layers.Layer):
+  def __init__(self, **kwargs):
+     super().__init__(**kwargs)
+
+  def build(self, input_shape):
+    super(PolarizedSelfAttention, self).build(input_shape)
+
+  def call(self, inputs, training=None, mask=None):
+    inp, query = inputs
+
+    x = tf.keras.layers.Conv1D(filters=x.shape[-1], kernel_size=1, padding="same")(inp)
+    g = tf.keras.layers.Conv1D(filters=x.shape[-1], kernel_size=1, padding="same")(query)
+
+    x = tf.keras.layers.add([x, g])
+    x = tf.keras.layers.Activation("relu")(x)
+    x = tf.keras.layers.Conv1D(filters=1, kernel_size=1, padding="same")
+    x = tf.keras.layers.Activation("sigmoid")(x)
+    x = tf.keras.layers.UpSampling1D(size=inp.shape[1] // x.shape[1])(x)
+
+    y = tf.keras.layers.Multiply(x, inp)
+
+    y = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same")
+    y = tf.keras.layers.BatchNormalization()(y)
+
+    return y
 
 
 class AudioClipLayer(Layer):
@@ -340,6 +365,9 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
           c_layer += a_layer
         else:
           c_layer = a_layer
+    
+    elif attention == "Gate":
+      c_layer = AttentionGate(name="Attention_Gate_"+str(i))([c_layer, X])
 
     X = tf.keras.layers.Concatenate(axis=2, name="concatenate_"+str(i))([X, c_layer]) 
 
