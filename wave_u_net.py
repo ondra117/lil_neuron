@@ -99,6 +99,9 @@ class AttentionGate:
   def __call__(self, inputs, training=None, mask=None):
     inp, query = inputs
 
+    print(inp.shape)
+    print(query.shape)
+
     x = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same")(inp)
     g = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same")(query)
 
