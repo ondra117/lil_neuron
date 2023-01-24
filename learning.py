@@ -54,7 +54,7 @@ c1 = CustomCallback(chackpoint=True)
 c2 = ModelCheckpoint(filepath='model.h5', save_best_only=False, save_weights_only=True, save_freq='epoch')
 
 # 90
-dataset = Dataset(list(range(40)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True)
+dataset = Dataset(list(range(90)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True)
 
 epochs = len(dataset) // steps_per_epoch
 print(f"data: {(len(dataset) * batch_size):_}")
