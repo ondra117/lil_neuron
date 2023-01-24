@@ -93,7 +93,7 @@ class PolarizedSelfAttention(tf.keras.layers.Layer):
     return output
 
 class AttentionGate:
-  def __init__(self):
+  def __init__(self, **kwargs):
     pass
 
   def __call__(self, inputs, training=None, mask=None):
