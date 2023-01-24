@@ -101,6 +101,7 @@ class AttentionGate:
 
     print(inp.shape)
     print(query.shape)
+    print("------------------------------")
 
     x = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same")(inp)
     g = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same")(query)
