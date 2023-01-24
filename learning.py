@@ -40,7 +40,7 @@ if os.path.exists('epoch.h5'):
     with open("epoch.txt", "r") as f:
         initial_epoch = int(f.read())
 
-opt = keras.optimizers.Adam(learning_rate=0.000_1) #0.000_01
+opt = keras.optimizers.Adam(learning_rate=0.000_1) #0.000_1
 
 loss = ScatterLoss(s_size, steps, noise_ratio)
 # loss = "MSE"
@@ -53,7 +53,8 @@ model.summary()
 c1 = CustomCallback(chackpoint=True)
 c2 = ModelCheckpoint(filepath='model.h5', save_best_only=False, save_weights_only=True, save_freq='epoch')
 
-dataset = Dataset(list(range(90)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True)
+# 90
+dataset = Dataset(list(range(40)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True)
 
 epochs = len(dataset) // steps_per_epoch
 print(f"data: {(len(dataset) * batch_size):_}")
