@@ -99,21 +99,21 @@ class AttentionGate:
   def __call__(self, inputs, training=None, mask=None):
     inp, query = inputs
 
-    x = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same", name="conv1_" + self.name)(inp)
-    g = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same", name="conv2_" + self.name)(query)
+    # x = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same", name="conv1_" + self.name)(inp)
+    # g = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same", name="conv2_" + self.name)(query)
 
-    x = tf.keras.layers.add([x, g])
-    x = tf.keras.layers.Activation("relu")(x)
-    x = tf.keras.layers.Conv1D(filters=1, kernel_size=1, padding="same", name="conv3_" + self.name)(x)
-    x = tf.keras.layers.Activation("sigmoid")(x)
-    x = tf.keras.layers.UpSampling1D(size=inp.shape[1] // x.shape[1], name="upsamp_" + self.name)(x)
+    # x = tf.keras.layers.add([x, g])
+    # x = tf.keras.layers.Activation("relu")(x)
+    # x = tf.keras.layers.Conv1D(filters=1, kernel_size=1, padding="same", name="conv3_" + self.name)(x)
+    # x = tf.keras.layers.Activation("sigmoid")(x)
+    # x = tf.keras.layers.UpSampling1D(size=inp.shape[1] // x.shape[1], name="upsamp_" + self.name)(x)
 
-    y = tf.keras.layers.Multiply()([x, inp])
+    # y = tf.keras.layers.Multiply()([x, inp])
 
-    y = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same", name="conv4_" + self.name)(y)
-    y = tf.keras.layers.BatchNormalization()(y)
+    # y = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same", name="conv4_" + self.name)(y)
+    # y = tf.keras.layers.BatchNormalization()(y)
 
-    return y
+    return inp
 
 
 class AudioClipLayer(Layer):
