@@ -97,10 +97,9 @@ class AttentionGate(tf.keras.layers.Layer):
     super(AttentionGate, self).__init__(**kwargs)
 
   def build(self, input_shape):
-    print(input_shape)
     inp, query = input_shape
     self.conv1 = tf.keras.layers.Conv1D(filters=inp[-1], kernel_size=1, strides=1, padding="same")
-    self.conv2 = tf.keras.layers.Conv1D(filters=inp[-1], kernel_size=1, strides=1, padding="same")(query)
+    self.conv2 = tf.keras.layers.Conv1D(filters=inp[-1], kernel_size=1, strides=1, padding="same")
     self.relu = tf.keras.layers.Activation("relu")
     self.conv3 = tf.keras.layers.Conv1D(filters=1, kernel_size=1, strides=1, padding="same")
     self.sigmoid = tf.keras.layers.Activation("sigmoid")
