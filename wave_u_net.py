@@ -107,7 +107,7 @@ class AttentionGate(tf.keras.layers.Layer):
 
     x = tf.keras.layers.add([x, g])
     x = tf.keras.layers.Activation("relu")(x)
-    x = tf.keras.layers.Conv1D(filters=1, kernel_size=1, padding="same")
+    x = tf.keras.layers.Conv1D(filters=1, kernel_size=1, padding="same")(x)
     x = tf.keras.layers.Activation("sigmoid")(x)
     x = tf.keras.layers.UpSampling1D(size=inp.shape[1] // x.shape[1])(x)
 
