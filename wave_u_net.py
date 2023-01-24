@@ -107,7 +107,7 @@ class AttentionGate(tf.keras.layers.Layer):
     self.batchnorm = tf.keras.layers.BatchNormalization()
     super(AttentionGate, self).build(input_shape)
 
-  def __call__(self, inputs, training=None, mask=None):
+  def call(self, inputs, training=None, mask=None):
     inp, query = inputs
 
     x = self.conv1(inp)
