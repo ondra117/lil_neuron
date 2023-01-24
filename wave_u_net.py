@@ -94,10 +94,10 @@ class PolarizedSelfAttention(tf.keras.layers.Layer):
 
 class AttentionGate(tf.keras.layers.Layer):
   def __init__(self, **kwargs):
-     super().__init__(**kwargs)
+     super(AttentionGate, self).__init__(**kwargs)
 
   def build(self, input_shape):
-    super(PolarizedSelfAttention, self).build(input_shape)
+    super(AttentionGate, self).build(input_shape)
 
   def call(self, inputs, training=None, mask=None):
     inp, query = inputs
