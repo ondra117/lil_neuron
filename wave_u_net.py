@@ -109,15 +109,15 @@ class AttentionGate:
     x = tf.keras.layers.Activation("relu")(x)
     x = tf.keras.layers.Conv1D(filters=1, kernel_size=1, strides=1, padding="same")(x)
     x = tf.keras.layers.Activation("sigmoid")(x)
-    x = tf.keras.layers.UpSampling1D(size=inp.shape[1] // x.shape[1])(x)
+    # x = tf.keras.layers.UpSampling1D(size=inp.shape[1] // x.shape[1])(x)
 
-    # y = tf.keras.layers.Multiply()([x, inp])
+    y = tf.keras.layers.Multiply()([x, inp])
 
     # y = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, strides=1, padding="same")(y)
     # y = tf.keras.layers.BatchNormalization()(y)
 
-    y = x
-    print(x.shape)
+    # y = x
+    print(y.shape)
     print("------------------------------")
     return y
 
