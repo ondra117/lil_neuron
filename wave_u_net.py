@@ -103,7 +103,7 @@ class AttentionGate(tf.keras.layers.Layer):
     self.relu = tf.keras.layers.Activation("relu")
     self.conv3 = tf.keras.layers.Conv1D(filters=1, kernel_size=1, strides=1, padding="same")
     self.sigmoid = tf.keras.layers.Activation("sigmoid")
-    self.conv4 = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, strides=1, padding="same")
+    self.conv4 = tf.keras.layers.Conv1D(filters=inp[-1], kernel_size=1, strides=1, padding="same")
     self.batchnorm = tf.keras.layers.BatchNormalization()
     super(AttentionGate, self).build(input_shape)
 
