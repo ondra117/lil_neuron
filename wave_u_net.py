@@ -113,7 +113,7 @@ class AttentionGate(tf.keras.layers.Layer):
 
     y = tf.keras.layers.Multiply()([x, inp])
 
-    y = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same")
+    y = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same")(y)
     y = tf.keras.layers.BatchNormalization()(y)
 
     return y
