@@ -92,26 +92,36 @@ class PolarizedSelfAttention(tf.keras.layers.Layer):
 
     return output
 
-class AttentionGate:
+class AttentionGate(tf.keras.layers.Layer):
   def __init__(self, **kwargs):
-    pass
+    super(AttentionGate, self).__init__(**kwargs)
+
+  def build(self, input_shape):
+    inp, query = input_shape
+    self.conv1 = tf.keras.layers.Conv1D(filters=inp[-1], kernel_size=1, strides=1, padding="same")
+    self.conv2 = tf.keras.layers.Conv1D(filters=inp[-1], kernel_size=1, strides=1, padding="same")(query)
+    self.relu = tf.keras.layers.Activation("relu")
+    self.conv3 = tf.keras.layers.Conv1D(filters=1, kernel_size=1, strides=1, padding="same")
+    self.sigmoid = tf.keras.layers.Activation("sigmoid")
+    self.conv4 = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, strides=1, padding="same")
+    self.batchnorm = tf.keras.layers.BatchNormalization()
+    super(AttentionGate, self).build(input_shape)
 
   def __call__(self, inputs, training=None, mask=None):
     inp, query = inputs
 
-    x = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, strides=1, padding="same")(inp)
-    g = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, strides=1, padding="same")(query)
+    x = self.conv1(inp)
+    g = self.conv2(query)
 
     x = tf.keras.layers.add([x, g])
-    x = tf.keras.layers.Activation("relu")(x)
-    x = tf.keras.layers.Conv1D(filters=1, kernel_size=1, strides=1, padding="same")(x)
-    x = tf.keras.layers.Activation("sigmoid")(x)
-    # x = tf.keras.layers.UpSampling1D(size=inp.shape[1] // x.shape[1])(x)
+    x = self.relu(x)
+    x = self.conv3(x)
+    x = self.sigmoid(x)
 
     y = tf.keras.layers.Multiply()([x, inp])
 
-    y = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, strides=1, padding="same")(y)
-    y = tf.keras.layers.BatchNormalization()(y)
+    y = self.conv4(y)
+    y = self.batchnorm(y)
 
     return y
 
