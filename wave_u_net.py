@@ -102,8 +102,8 @@ class AttentionGate(tf.keras.layers.Layer):
   def call(self, inputs, training=None, mask=None):
     inp, query = inputs
 
-    x = tf.keras.layers.Conv1D(filters=x.shape[-1], kernel_size=1, padding="same")(inp)
-    g = tf.keras.layers.Conv1D(filters=x.shape[-1], kernel_size=1, padding="same")(query)
+    x = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same")(inp)
+    g = tf.keras.layers.Conv1D(filters=inp.shape[-1], kernel_size=1, padding="same")(query)
 
     x = tf.keras.layers.add([x, g])
     x = tf.keras.layers.Activation("relu")(x)
