@@ -36,7 +36,7 @@ if os.path.exists('model.h5'): model.load_weights('model.h5')
 
 initial_epoch = 0
 
-if os.path.exists('epoch.h5'):
+if os.path.exists('epoch.txt'):
     with open("epoch.txt", "r") as f:
         initial_epoch = int(f.read())
 
