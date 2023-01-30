@@ -400,6 +400,8 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
   
   elif output_type == "single":
     X = tf.keras.layers.Conv1D(num_channels, output_filter_size, padding= padding, name="single_out")(X)
+    if attention == "Last":
+      X = PolarizedSelfAttention(name="Attention_Block")(X)
     if sub:
       X = inp - X
   else:
@@ -427,7 +429,7 @@ params = {
   "upsampling_type": "learned",         # "learned" or "linear"
   "output_activation": "linear",        # "linear" or "tanh"
   "output_type": "difference",          # "direct" or "single" or "difference" 
-  "attention": "False",                 # "False" or "Normal" or "Polarized" or "Gate"
+  "attention": "False",                 # "False" or "Normal" or "Polarized" or "Gate" or "Last"
   "attention_res": False,
   "dropout": "False",                     # "False" or "Full" or "Last"
   "dropout_rate": 0.2
