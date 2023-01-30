@@ -399,9 +399,9 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
     X = IndependentOutputLayer(source_names, num_channels, output_filter_size, padding=padding, name="independent_out")(X)
   
   elif output_type == "single":
-    X = tf.keras.layers.Conv1D(num_channels, output_filter_size, padding= padding, name="single_out")(X)
     if attention == "Last":
       X = PolarizedSelfAttention(name="Attention_Block")(X)
+    X = tf.keras.layers.Conv1D(num_channels, output_filter_size, padding= padding, name="single_out")(X)
     if sub:
       X = inp - X
   else:
