@@ -46,7 +46,8 @@ class AudioExtractor:
 
             song = {
                 "title":video_info["title"],
-                "lyrics":self.get_lyrics(video_info["title"])
+                "lyrics":self.get_lyrics(video_info["title"]),
+                "url":url
             }
 
             data["songs"][data["n_songs"]] = song

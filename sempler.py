@@ -34,14 +34,14 @@ def _get_sample(idx, s_size, data, movs, steps, noise_ratio, orig=False):
     noise /= np.abs(noise).max()
 
     samples = np.zeros_like(sound)
-
+    # print("start")
     for d in range(steps):
         start = d * movs
         end = start + movs
         noise_volium = (d + 1) / steps
-        noise[start:end] *= noise_volium
-        samples[start:end] = sound[start:end] * (1 - noise_volium) + noise[start:end]
-
+        samples[start:end] = sound[start:end] * (1 - noise_volium) + noise[start:end] * noise_volium
+    #     print(f"d:{d} | nv:{noise_volium} | dip:{np.mean(np.abs(samples[start:end] - sound[start:end]))} | dima:{np.max(np.abs(samples[start:end] - sound[start:end]))} | dimi:{np.min(np.abs(samples[start:end] - sound[start:end]))}")
+    # print("end")
     if orig:
         out = sound
     else:
@@ -107,13 +107,14 @@ class Dataset(Sequence):
 from time import time, sleep
 if __name__ == '__main__':
     t = time()
-    dataset = Dataset([0, 1], s_size=16384 * 12, steps=100, batch_size=1, noise_ratio=0.7)
+    dataset = Dataset([0, 1], s_size=16384 * 12, steps=40, batch_size=1, noise_ratio=0.7)
     # for i in range(10):
     #     sleep(1)
     #     t = time()
     #     dataset[0]
     #     print(time() - t)
-    wavfile.write(f"t.wav", 44000, (dataset[0][0].reshape([-1]) * 32767).astype(np.int16))
+    # wavfile.write(f"t.wav", 44000, (dataset[0][0].reshape([-1]) * 32767).astype(np.int16))
+    sleep(10)
     exit()
     
     import matplotlib.pyplot as plt

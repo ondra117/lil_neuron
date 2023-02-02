@@ -50,3 +50,25 @@ class ScatterLoss(Loss):
 
         loss = tf.reduce_sum(p_side + l_side, 0)
         return loss
+
+class RegulatedLoss(Loss):
+    def __init__(self, s_size, steps, max_scatter):
+        super().__init__(name="scatter_loss")
+        movs = s_size // steps
+        interval = np.zeros([s_size], dtype=np.float32)
+
+        for d in range(1, steps):
+            interval[d * movs:] = d
+
+        interval /= (steps - 1)
+        interval *= max_scatter * (steps - 2) / (steps - 1)
+
+        interval = np.power(interval, 2)
+
+        self.interval = tf.convert_to_tensor(interval.reshape([1, -1, 1]), dtype=tf.float32)
+
+    def __call__(self, y_true, y_pred, sample_weight):
+        loss = tf.pow(y_pred - y_true, 2) / self.interval
+
+        loss = tf.reduce_sum(loss, 0)
+        return loss
