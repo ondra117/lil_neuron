@@ -8,16 +8,12 @@ def get_playlist(playlist):
     act_links = set(data["done"] + data["front"])
     number = data["n"]
 
-    urls = []
-    playlist_urls = Playlist(playlist)
-    for url in playlist_urls:
-        if not url in act_links:
-            number += 1
-            print(f"new song added: {number}")
-            urls.append(url)
+    playlist_urls = set(Playlist(playlist))
+    playlist_urls -= act_links
+    number += len(playlist_urls)
 
     data["n"] = number
-    data["front"] += urls
+    data["front"] += list(playlist_urls)
 
     with open("links.json", "w") as f:
         json.dump(data, f, indent=4)
