@@ -51,7 +51,7 @@ def _get_sample(idx, s_size, data, movs, steps, noise_ratio, orig=False):
 
 
 class Dataset(Sequence):
-    def __init__(self, songs, s_size=16384 * 24, steps=10, batch_size=1, noise_ratio=0.5, random_seed=0, orig=False):
+    def __init__(self, songs, s_size=16384 * 24, steps=10, batch_size=1, noise_ratio=0.5, random_seed=0, orig=False, info=False):
         np.random.seed(random_seed)
         self.s_size = s_size
         self.steps = steps
@@ -67,8 +67,23 @@ class Dataset(Sequence):
 
         norm = lambda x: x / np.abs(x).max()
 
-        self.songs = np.concatenate([norm(np.mean(wavfile.read(f'./music/{song}.wav')[1], axis=1).astype(np.float32)) for song in songs])
+        if info:
+            n_songs = len(songs)
+            self.songs = [(wavfile.read(f'./music/{song}.wav')[1].astype(np.float32), print(f"Loading songs: {idx}/{n_songs}", end="\r"))[0] for idx, song in enumerate(songs)]
+            print(f"Loading songs: {n_songs}/{n_songs}")
+        else:
+            self.songs = [wavfile.read(f'./music/{song}.wav')[1].astype(np.float32) for song in songs]
 
+        for idx, song in enumerate(self.songs):
+            if song.ndim == 2:
+                song = np.mean(song, axis=1)
+            self.songs[idx] = norm(song)
+            if info:
+                print(f"Processing songs: {idx}/{n_songs}", end="\r")
+                
+        if info:
+            print(f"Processing songs: {n_songs}/{n_songs}")
+        
         self.data_len = ((self.songs.shape[0]) // self.movs) // batch_size
 
         self.songs = np.append(self.songs, np.zeros([s_size * batch_size]))
