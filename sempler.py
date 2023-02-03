@@ -83,6 +83,8 @@ class Dataset(Sequence):
                 
         if info:
             print(f"Processing songs: {n_songs}/{n_songs}")
+
+        self.songs = np.concatenate(self.songs)
         
         self.data_len = ((self.songs.shape[0]) // self.movs) // batch_size
 
