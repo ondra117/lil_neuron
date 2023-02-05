@@ -96,9 +96,9 @@ if __name__ == '__main__':
     with open("links.json") as f:
         data = json.load(f)
     
-    for idx, link in enumerate(deepcopy(data["front"])):
+    for link in deepcopy(data["front"]):
         ar.extract(link)
-        data["front"].pop(idx)
+        data["front"].pop()
         data["done"].append(link)
         with open("links.json", "w") as f:
             json.dump(data, f, indent=4)
