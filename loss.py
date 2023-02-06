@@ -68,7 +68,7 @@ class RegulatedLoss(Loss):
         self.interval = tf.convert_to_tensor(interval.reshape([1, -1, 1]), dtype=tf.float32)
 
     def __call__(self, y_true, y_pred, sample_weight):
-        dx = tf.pow(y_pred - y_true, 2) / self.interval
+        dx = tf.pow(y_pred - y_true, 2) / 10
 
         loss = tf.reduce_sum(dx, 0)
         return loss
