@@ -7,7 +7,7 @@ import keras
 # from keras import layers
 from sempler import Dataset
 from wave_u_net import wave_u_net
-from loss import combined_loss, ScatterLoss
+from loss import combined_loss, ScatterLoss, RegulatedLoss
 from call_back import CustomCallback
 from keras.callbacks import ModelCheckpoint
 # import random
@@ -19,7 +19,7 @@ import math
 s_size = 16384 * (24 // 2)
 steps_per_epoch = 10
 steps = 40
-noise_ratio = 0.21
+noise_ratio = 0.7
 batch_size=3
 
 # model = wave_u_net(num_initial_filters = 12, num_layers = 6, kernel_size = 10, input_size = s_size, output_type = "single")
@@ -40,9 +40,10 @@ if os.path.exists('epoch.txt'):
     with open("epoch.txt", "r") as f:
         initial_epoch = int(f.read())
 
-opt = keras.optimizers.Adam(learning_rate=0.000_005) #0.000_1 - 0.000_01
+opt = keras.optimizers.Adam(learning_rate=0.000_01) #0.000_1 - 0.000_01
 
-loss = ScatterLoss(s_size, steps, noise_ratio)
+loss = RegulatedLoss(s_size, steps, noise_ratio)
+# loss = ScatterLoss(s_size, steps, noise_ratio)
 # loss = "MSE"
 
 model.compile(loss=loss, optimizer=opt)
