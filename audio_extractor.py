@@ -37,7 +37,12 @@ class AudioExtractor:
 
     def extract(self, url: str):
         while True:
-            video_info = youtube_dl.YoutubeDL().extract_info(url = url,download=False)
+            try:
+                video_info = youtube_dl.YoutubeDL().extract_info(url = url,download=False)
+            except youtube_dl.utils.DownloadError as e:
+                print(f"Error: {e}")
+                print("Try again:")
+                continue
 
             with open("music.json") as f:
                 data = json.load(f)
