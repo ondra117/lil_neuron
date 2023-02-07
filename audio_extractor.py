@@ -41,6 +41,8 @@ class AudioExtractor:
                 video_info = youtube_dl.YoutubeDL().extract_info(url = url,download=False)
             except youtube_dl.utils.DownloadError as e:
                 print(f"Error: {e}")
+                if "Sign in to confirm your age" in e:
+                    return False
                 print("Try again:")
                 continue
 
@@ -106,9 +108,9 @@ if __name__ == '__main__':
         data = json.load(f)
     
     for link in deepcopy(data["front"]):
-        ar.extract(link)
+        if ar.extract(link) != False:
+            data["done"].append(link)
         data["front"].pop()
-        data["done"].append(link)
         with open("links.json", "w") as f:
             json.dump(data, f, indent=4)
 
