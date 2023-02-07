@@ -70,9 +70,10 @@ class AudioExtractor:
                 print(f"Error: {e}")
                 print("Try again:")
                 continue
-            except Exception as e:
-                print(e)
-                exit()
+            except youtube_dl.utils.ExtractorError as e:
+                print(f"Error: {e}")
+                print("Try again:")
+                continue
 
             sleep(1)
             os.chdir("music")
