@@ -75,10 +75,14 @@ class AudioExtractor:
                     # stream = ffmpeg.output(stream, f"{data['n_songs']}.wav")
             except youtube_dl.utils.DownloadError as e:
                 print(f"Error: {e}")
+                if "Sign in to confirm your age" in e:
+                    return False
                 print("Try again:")
                 continue
             except youtube_dl.utils.ExtractorError as e:
                 print(f"Error: {e}")
+                if "Sign in to confirm your age" in e:
+                    return False
                 print("Try again:")
                 continue
 
