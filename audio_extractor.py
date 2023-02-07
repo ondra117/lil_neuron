@@ -35,13 +35,13 @@ class AudioExtractor:
     def end(self):
         self.driver.quit()
 
-    def extract(self, url: str):
+    def extract(self, url):
         while True:
             try:
                 video_info = youtube_dl.YoutubeDL().extract_info(url = url,download=False)
             except youtube_dl.utils.DownloadError as e:
                 print(f"Error: {e}")
-                if "Sign in to confirm your age" in e:
+                if "Sign in to confirm your age" in str(e):
                     return False
                 print("Try again:")
                 continue
@@ -75,13 +75,13 @@ class AudioExtractor:
                     # stream = ffmpeg.output(stream, f"{data['n_songs']}.wav")
             except youtube_dl.utils.DownloadError as e:
                 print(f"Error: {e}")
-                if "Sign in to confirm your age" in e:
+                if "Sign in to confirm your age" in str(e):
                     return False
                 print("Try again:")
                 continue
             except youtube_dl.utils.ExtractorError as e:
                 print(f"Error: {e}")
-                if "Sign in to confirm your age" in e:
+                if "Sign in to confirm your age" in str(e):
                     return False
                 print("Try again:")
                 continue
