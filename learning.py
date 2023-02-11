@@ -18,8 +18,8 @@ import math
 
 s_size = 16384 * (24 // 2)
 steps_per_epoch = 10
-steps = 40
-noise_ratio = 0.4
+steps = 20
+noise_ratio = 0.7
 batch_size=3
 
 # model = wave_u_net(num_initial_filters = 12, num_layers = 6, kernel_size = 10, input_size = s_size, output_type = "single")
