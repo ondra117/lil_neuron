@@ -61,4 +61,4 @@ while i * dataset.movs + s_size < sound.shape[1]:
 sound = np.array(sound).reshape([-1])
 
 wavfile.write("t.wav", 44000, (sound * 32767).astype(np.int16))
-print("done")
+print("done" + " " * 50)
