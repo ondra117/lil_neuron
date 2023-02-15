@@ -15,7 +15,7 @@ import datetime
 
 s_size = 16384 * (24 // 2)
 # steps_per_epoch = 10
-steps = 25
+steps = 15
 
 # model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single")
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single")
