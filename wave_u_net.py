@@ -330,7 +330,7 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
        
     X = tf.keras.layers.LeakyReLU(name="Down_Conv_Activ_"+str(i))(X)
     if side_chanel:
-       Y = tf.keras.layers.LeakyReLU(name="Down_Conv_Activ_"+str(i))(Y)
+       Y = tf.keras.layers.LeakyReLU(name="Down_Conv_Activ_Side"+str(i))(Y)
 
     if dropout == "Full":
       X = tf.keras.layers.Dropout(rate=dropout_rate, name="Down_Dropout_"+str(i))(X)
@@ -341,7 +341,7 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
 
     X = tf.keras.layers.Lambda(lambda x: x[:,::2,:], name="Decimate_"+str(i))(X)
     if side_chanel:
-      Y = tf.keras.layers.Lambda(lambda x: x[:,::2,:], name="Decimate_"+str(i))(Y)
+      Y = tf.keras.layers.Lambda(lambda x: x[:,::2,:], name="Decimate_Side"+str(i))(Y)
 
 
   X = tf.keras.layers.Conv1D(filters=num_initial_filters + (num_initial_filters * num_layers),
@@ -373,6 +373,10 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
     X = tf.keras.layers.Lambda(lambda x: tf.squeeze(x, axis=1), name="sq_dims_"+str(i))(X)
     
     c_layer = CropLayer(X, False, name="crop_layer_"+str(i))(enc_outputs[-i-1])
+
+    if side_chanel:
+      c_layer_side = CropLayer(c_layer, False, name="crop_layer_Side"+str(i))(enc_outputs_side[-i-1])
+      c_layer = AttentionGate(name="Attention_Gate_Side"+str(i))([c_layer, c_layer_side])
 
     if attention == "Normal":
         a_layer = SelfAttention(name="Attention_"+str(i))(c_layer)
@@ -425,7 +429,11 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
     X = DiffOutputLayer(source_names, 1, output_filter_size, padding=padding, name="diff_out")([X, cropped_input])
 
   o = X
-  model = tf.keras.Model(inputs=raw_input, outputs=o)
+  rew_inp = raw_input
+  if side_chanel:
+    rew_inp = [raw_input, side_input]
+     
+  model = tf.keras.Model(inputs=rew_inp, outputs=o)
   return model
 
 # Parameters for the Wave-U-net
