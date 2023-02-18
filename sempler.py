@@ -190,7 +190,8 @@ class DatasetSide(Sequence):
 
         self.songs = [np.append(song, np.zeros([s_size * batch_size])) for song in self.songs]
 
-        self.shufle = shuffle([(idx, sample) for idx, song_len in enumerate(songs_composition) for sample in range(song_len)])
+        self.shufle = [(idx, sample) for idx, song_len in enumerate(songs_composition) for sample in range(song_len)]
+        shuffle(self.shufle)
 
         Thread(target=self._generate_new).start()
 
@@ -223,14 +224,14 @@ class DatasetSide(Sequence):
 from time import time, sleep
 if __name__ == '__main__':
     t = time()
-    dataset = Dataset([0, 1], s_size=16384 * 12, steps=40, batch_size=1, noise_ratio=0.7)
-    # for i in range(10):
-    #     sleep(1)
-    #     t = time()
-    #     dataset[0]
-    #     print(time() - t)
+    dataset = DatasetSide([0, 1], s_size=16384 * 12, steps=40, batch_size=1, noise_ratio=0.7, info=True, side_cysles=10)
+    for i in range(10):
+        sleep(1)
+        t = time()
+        dataset[0]
+        print(time() - t)
     # wavfile.write(f"t.wav", 44000, (dataset[0][0].reshape([-1]) * 32767).astype(np.int16))
-    sleep(10)
+    print("done")
     exit()
     
     import matplotlib.pyplot as plt

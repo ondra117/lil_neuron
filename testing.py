@@ -15,6 +15,8 @@ import datetime
 
 s_size = 16384 * (24 // 2)
 # steps_per_epoch = 10
+cycles = 10
+side = False
 steps = 25
 
 # model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single")
@@ -22,7 +24,7 @@ steps = 25
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single")
 
 # model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2)
-model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2)
+model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=False, side_chanel=False, side_chanel_cycles=10)
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single", attention = "Polarized", dropout = True, dropout_rate = 0.2)
 
 model.load_weights("model.h5")
@@ -41,6 +43,8 @@ sound = (noise * (dataset.noise_ratio) + sound * (1 - dataset.noise_ratio))
 wavfile.write("o.wav", 44000, (sound * 32767 * 0.5).astype(np.int16))
 
 sound = sound.reshape([1, -1, 1])
+if side:
+    side_input = np.zeros([1, s_size, cycles])
 
 print(sound.shape[1])
 
@@ -50,7 +54,13 @@ i = 0
 while i * dataset.movs + s_size < sound.shape[1]:
     print(f"{i * dataset.movs + s_size} / {sound.shape[1]} | ETA: {datetime.timedelta(seconds=(sound.shape[1] - (i * dataset.movs + s_size)) / dataset.movs * gt)}", end="\r")
     t = time()
-    noise = model.predict(sound[:, i * dataset.movs:i * dataset.movs + s_size, :], verbose = 0)
+    if side:
+        s_idx = i * dataset.movs
+        side_input.fill(0)
+        side_input[:, -s_idx:, :] = sound[:, max(0, s_idx)-side_input.size:s_idx, :]
+        noise = model.predict([sound[:, s_idx:i * dataset.movs + s_size, :], side_input], verbose = 0)
+    else:
+        noise = model.predict(sound[:, i * dataset.movs:i * dataset.movs + s_size, :], verbose = 0)
     sound[:, i * dataset.movs:i * dataset.movs + s_size, :] -= noise
     t = time() - t
     gt += t
