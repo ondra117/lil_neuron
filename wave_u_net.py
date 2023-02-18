@@ -301,16 +301,20 @@ class DiffOutputLayer(Layer):
 """# Define the Network"""
 
 def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merge_filter_size = 5, 
-               source_names = ["bass", "drums", "other", "vocals"], num_channels = 1, output_filter_size = 1,
+               source_names = ["bass", "drums", "other", "vocals"], output_filter_size = 1,
                padding = "same", input_size = 16384 * 4, context = False, upsampling_type = "learned",
                output_activation = "linear", output_type = "difference", attention = "False", attention_res = False,
-               dropout = "False", dropout_rate = 0.2, sub = False):
+               dropout = "False", dropout_rate = 0.2, sub = False, side_chanel=False, side_chanel_cycles=None):
   
   # `enc_outputs` stores the downsampled outputs to re-use during upsampling.
   enc_outputs = []
 
   # `raw_input` is the input to the network
-  raw_input = tf.keras.layers.Input(shape=(input_size, num_channels),name="raw_input")
+  raw_input = tf.keras.layers.Input(shape=(input_size, 1),name="raw_input")
+  if side_chanel: 
+    enc_outputs_side = []
+    side_input = tf.keras.layers.Input(shape=(input_size, side_chanel_cycles),name="side_input")
+    Y = side_input
   X = raw_input
   inp = raw_input
 
@@ -319,14 +323,25 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
     X = tf.keras.layers.Conv1D(filters=num_initial_filters + (num_initial_filters * i),
                           kernel_size=kernel_size,strides=1,
                           padding=padding, name="Down_Conv_"+str(i))(X)
+    if side_chanel:
+       Y = tf.keras.layers.Conv1D(filters=num_initial_filters + (num_initial_filters * i),
+                            kernel_size=kernel_size,strides=1,
+                            padding=padding, name="Down_Conv_Side"+str(i))(Y)
+       
     X = tf.keras.layers.LeakyReLU(name="Down_Conv_Activ_"+str(i))(X)
+    if side_chanel:
+       Y = tf.keras.layers.LeakyReLU(name="Down_Conv_Activ_"+str(i))(Y)
 
     if dropout == "Full":
       X = tf.keras.layers.Dropout(rate=dropout_rate, name="Down_Dropout_"+str(i))(X)
 
     enc_outputs.append(X)
+    if side_chanel:
+      enc_outputs_side.append(Y)
 
     X = tf.keras.layers.Lambda(lambda x: x[:,::2,:], name="Decimate_"+str(i))(X)
+    if side_chanel:
+      Y = tf.keras.layers.Lambda(lambda x: x[:,::2,:], name="Decimate_"+str(i))(Y)
 
 
   X = tf.keras.layers.Conv1D(filters=num_initial_filters + (num_initial_filters * num_layers),
@@ -396,18 +411,18 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
     X = tf.keras.layers.Dropout(rate=dropout_rate, name="Dropout_Last")(X)
 
   if output_type == "direct":
-    X = IndependentOutputLayer(source_names, num_channels, output_filter_size, padding=padding, name="independent_out")(X)
+    X = IndependentOutputLayer(source_names, 1, output_filter_size, padding=padding, name="independent_out")(X)
   
   elif output_type == "single":
     if attention == "Last":
       X = PolarizedSelfAttention(name="Attention_Block")(X)
-    X = tf.keras.layers.Conv1D(num_channels, output_filter_size, padding= padding, name="single_out")(X)
+    X = tf.keras.layers.Conv1D(1, output_filter_size, padding= padding, name="single_out")(X)
     if sub:
       X = inp - X
   else:
     # Difference Output
     cropped_input = CropLayer(X, False, name="crop_layer_"+str(num_layers+1))(inp)
-    X = DiffOutputLayer(source_names, num_channels, output_filter_size, padding=padding, name="diff_out")([X, cropped_input])
+    X = DiffOutputLayer(source_names, 1, output_filter_size, padding=padding, name="diff_out")([X, cropped_input])
 
   o = X
   model = tf.keras.Model(inputs=raw_input, outputs=o)
