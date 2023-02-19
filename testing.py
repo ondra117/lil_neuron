@@ -15,8 +15,8 @@ import datetime
 
 s_size = 16384 * (24 // 2)
 # steps_per_epoch = 10
+side = True
 cycles = 10
-side = False
 steps = 25
 
 # model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single")
@@ -24,7 +24,7 @@ steps = 25
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single")
 
 # model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2)
-model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=False, side_chanel=False, side_chanel_cycles=10)
+model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=False, side_chanel=side, side_chanel_cycles=cycles)
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single", attention = "Polarized", dropout = True, dropout_rate = 0.2)
 
 model.load_weights("model.h5")

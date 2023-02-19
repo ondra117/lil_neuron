@@ -5,7 +5,7 @@ import os
 import tensorflow as tf
 import keras
 # from keras import layers
-from sempler import Dataset
+from sempler import Dataset, DatasetSide
 from wave_u_net import wave_u_net
 from loss import combined_loss, ScatterLoss, RegulatedLoss
 from call_back import CustomCallback
@@ -19,8 +19,10 @@ import math
 s_size = 16384 * (24 // 2)
 steps_per_epoch = 100
 steps = 25 # 40
-noise_ratio = 0.5
+noise_ratio = 0.7
 batch_size=3
+side = True
+cycles = 10
 
 # model = wave_u_net(num_initial_filters = 12, num_layers = 6, kernel_size = 10, input_size = s_size, output_type = "single")
 
@@ -29,7 +31,7 @@ batch_size=3
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single")
 
 # model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=True, side_chanel=True, side_chanel_cycles=10)
-model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=True, side_chanel=False, side_chanel_cycles=10)
+model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=True, side_chanel=False, side_chanel_cycles=cycles)
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = False, dropout_rate = 0.2, sub=True, side_chanel=True, side_chanel_cycles=10)
 
 if os.path.exists('model.h5'): model.load_weights('model.h5')
@@ -54,7 +56,10 @@ c1 = CustomCallback(chackpoint=True)
 c2 = ModelCheckpoint(filepath='model.h5', save_best_only=False, save_weights_only=True, save_freq='epoch')
 
 # 90
-dataset = Dataset(list(range(90)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True)
+if side:
+    dataset = DatasetSide(list(range(90)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True, side_cycles=cycles)
+else:
+    dataset = Dataset(list(range(90)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True)
 
 epochs = len(dataset) // steps_per_epoch
 print(f"data: {(len(dataset) * batch_size):_}")
