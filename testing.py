@@ -47,7 +47,7 @@ if side:
     side_input = np.zeros([1, s_size, cycles])
 
 print(sound.shape[1])
-
+#
 t = 0
 gt = 0
 i = 0
