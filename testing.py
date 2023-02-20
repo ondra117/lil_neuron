@@ -57,7 +57,9 @@ while i * dataset.movs + s_size < sound.shape[1]:
     if side:
         s_idx = i * dataset.movs
         side_input.fill(0)
+        side_input = side_input.reshape([1, -1, 1])
         side_input[:, -s_idx:, :] = sound[:, max(0, s_idx)-side_input.size:s_idx, :]
+        side_input = side_input.reshape([1, s_size, cycles])
         noise = model.predict([sound[:, s_idx:i * dataset.movs + s_size, :], side_input], verbose = 0)
     else:
         noise = model.predict(sound[:, i * dataset.movs:i * dataset.movs + s_size, :], verbose = 0)
