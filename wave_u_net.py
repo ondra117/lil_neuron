@@ -376,7 +376,7 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
 
     if side_chanel:
       c_layer_side = CropLayer(c_layer, False, name="crop_layer_Side"+str(i))(enc_outputs_side[-i-1])
-      c_layer = AttentionGate(name="Attention_Gate_Side"+str(i))([c_layer, c_layer_side])
+      c_layer_side_att = AttentionGate(name="Attention_Gate_Side"+str(i))([c_layer, c_layer_side])
 
     if attention == "Normal":
         a_layer = SelfAttention(name="Attention_"+str(i))(c_layer)
@@ -395,7 +395,9 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
     elif attention == "Gate":
       c_layer = AttentionGate(name="Attention_Gate_"+str(i))([c_layer, X])
 
-    X = tf.keras.layers.Concatenate(axis=2, name="concatenate_"+str(i))([X, c_layer]) 
+    X = tf.keras.layers.Concatenate(axis=2, name="concatenate_"+str(i))([X, c_layer])
+    X = tf.keras.layers.Concatenate(axis=2, name="concatenate_"+str(i))([X, c_layer_side])
+    X = tf.keras.layers.Concatenate(axis=2, name="concatenate_"+str(i))([X, c_layer_side_att])
 
 
     X = tf.keras.layers.Conv1D(filters=num_initial_filters + (num_initial_filters * (num_layers - i - 1)),

@@ -19,7 +19,7 @@ import math
 s_size = 16384 * (24 // 2)
 steps_per_epoch = 100
 steps = 25 # 40
-noise_ratio = 0.5
+noise_ratio = 0.7
 batch_size=2
 side = True
 cycles = 10
