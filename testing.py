@@ -24,8 +24,8 @@ steps = 25
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single")
 
 # model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2)
-model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=False, side_chanel=side, side_chanel_cycles=cycles)
-# model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single", attention = "Polarized", dropout = True, dropout_rate = 0.2)
+# model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=False, side_chanel=side, side_chanel_cycles=cycles)
+model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = False, dropout_rate = 0.2, sub=True, side_chanel=False, side_chanel_cycles=10)
 
 model.load_weights("model.h5")
 
@@ -38,7 +38,7 @@ noise = np.random.normal(0.0, 1, size=sound.shape[0])
 
 noise = noise / np.max(np.abs(noise))
 
-sound = np.concatenate([sound[:50*dataset.movs], (noise * (dataset.noise_ratio) + sound * (1 - dataset.noise_ratio))[50*dataset.movs:]])
+sound = (noise * (dataset.noise_ratio) + sound * (1 - dataset.noise_ratio))
 
 wavfile.write("o.wav", 44000, (sound * 32767 * 0.5).astype(np.int16))
 
@@ -50,7 +50,7 @@ print(sound.shape[1])
 #
 t = 0
 gt = 0
-i = 50
+i = 0
 while i * dataset.movs + s_size < sound.shape[1]:
     print(f"{i * dataset.movs + s_size} / {sound.shape[1]} | ETA: {datetime.timedelta(seconds=(sound.shape[1] - (i * dataset.movs + s_size)) / dataset.movs * gt)}", end="\r")
     t = time()

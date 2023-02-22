@@ -31,8 +31,8 @@ cycles = 10
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single")
 
 # model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=True, side_chanel=True, side_chanel_cycles=10)
-model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=True, side_chanel=side, side_chanel_cycles=cycles)
-# model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = False, dropout_rate = 0.2, sub=True, side_chanel=True, side_chanel_cycles=10)
+# model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=True, side_chanel=side, side_chanel_cycles=cycles)
+model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = False, dropout_rate = 0.2, sub=True, side_chanel=False, side_chanel_cycles=10)
 
 if os.path.exists('model.h5'): model.load_weights('model.h5')
 
