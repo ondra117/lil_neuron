@@ -15,7 +15,7 @@ import datetime
 
 s_size = 16384 * (24 // 2)
 # steps_per_epoch = 10
-side = False
+side = True
 cycles = 10
 steps = 20
 
