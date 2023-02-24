@@ -396,8 +396,9 @@ def wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, merg
       c_layer = AttentionGate(name="Attention_Gate_"+str(i))([c_layer, X])
 
     X = tf.keras.layers.Concatenate(axis=2, name="concatenate_0_"+str(i))([X, c_layer])
-    # X = tf.keras.layers.Concatenate(axis=2, name="concatenate_1_"+str(i))([X, c_layer_side])
-    # X = tf.keras.layers.Concatenate(axis=2, name="concatenate_2_"+str(i))([X, c_layer_side_att])
+    if side_chanel:
+      X = tf.keras.layers.Concatenate(axis=2, name="concatenate_1_"+str(i))([X, c_layer_side])
+      X = tf.keras.layers.Concatenate(axis=2, name="concatenate_2_"+str(i))([X, c_layer_side_att])
 
 
     X = tf.keras.layers.Conv1D(filters=num_initial_filters + (num_initial_filters * (num_layers - i - 1)),
