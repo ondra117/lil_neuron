@@ -20,8 +20,8 @@ s_size = 16384 * (24 // 2)
 steps_per_epoch = 100
 steps = 20 # 40
 noise_ratio = 0.7
-batch_size=1
-side = True
+batch_size=2
+side = False
 cycles = 10
 
 # model = wave_u_net(num_initial_filters = 12, num_layers = 6, kernel_size = 10, input_size = s_size, output_type = "single")
@@ -31,8 +31,8 @@ cycles = 10
 # model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single")
 
 # model = wave_u_net(num_initial_filters = 24, num_layers = 12, kernel_size = 15, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=True, side_chanel=True, side_chanel_cycles=10)
-model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=True, side_chanel=side, side_chanel_cycles=cycles)
-# model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = False, dropout_rate = 0.2, sub=True, side_chanel=side, side_chanel_cycles=cycles)
+# model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 30, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = "False", dropout_rate = 0.2, sub=True, side_chanel=side, side_chanel_cycles=cycles)
+model = wave_u_net(num_initial_filters = 32, num_layers = 16, kernel_size = 50, input_size = s_size, output_type = "single", attention = "Gate", attention_res = False, dropout = False, dropout_rate = 0.2, sub=True, side_chanel=side, side_chanel_cycles=cycles)
 
 if os.path.exists('model.h5'): model.load_weights('model.h5')
 
