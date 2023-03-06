@@ -5,7 +5,7 @@ import os
 import tensorflow as tf
 import keras
 # from keras import layers
-from sempler import Dataset, DatasetSide
+from sempler import Dataset, DatasetSide, DatasetSoft
 from wave_u_net import wave_u_net
 from loss import combined_loss, ScatterLoss, RegulatedLoss
 from call_back import CustomCallback
@@ -59,7 +59,8 @@ c2 = ModelCheckpoint(filepath='model.h5', save_best_only=False, save_weights_onl
 if side:
     dataset = DatasetSide(list(range(90)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True, side_cysles=cycles)
 else:
-    dataset = Dataset(list(range(900, 1044)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True)
+    # dataset = Dataset(list(range(900, 1044)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True)
+    dataset = DatasetSoft(list(range(0, 1044)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True)
 
 epochs = len(dataset) // steps_per_epoch
 print(f"data: {(len(dataset) * batch_size):_}")

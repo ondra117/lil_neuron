@@ -104,7 +104,7 @@ class Dataset(Sequence):
             if not self.generate:
                 start = self.shufle[self.idx * self.batch_size]
                 for idx in range(self.batch_size):
-                    self.X[idx], self.Y[idx] = _get_sample(start + idx, self.s_size, self.songs, self.movs, self.steps, self.noise_ratio, orig=self.orig)
+                    self.X[idx], self.Y[idx] = _get_sample(start * self.batch_size + idx, self.s_size, self.songs, self.movs, self.steps, self.noise_ratio, orig=self.orig)
                 self.generate = True
             sleep(0.00001)
 
@@ -214,6 +214,89 @@ class DatasetSide(Sequence):
         # return self.X, self.Y
         while not self.generate:
             sleep(0.00001)
+        self.idx = idx
+        X = self.X
+        Y = self.Y
+        self.lock.acquire()
+        self.generate = False
+        self.lock.release()
+        return X, Y
+    
+def _get_sample_soft(idx, s_size, data, movs, steps, noise_ratio, orig=False):
+
+    sound = data[idx * movs:idx * movs + s_size]
+    noise = np.random.normal(0.0, 1, size=s_size)
+    noise /= np.abs(noise).max()
+
+    samples = np.zeros_like(sound)
+    # print("start")
+    for d in range(steps):
+        start = d * movs
+        end = start + movs
+        noise_volium = (d + 1) / steps
+        samples[start:end] = sound[start:end] * (1 - noise_volium) + noise[start:end] * noise_volium
+    #     print(f"d:{d} | nv:{noise_volium} | dip:{np.mean(np.abs(samples[start:end] - sound[start:end]))} | dima:{np.max(np.abs(samples[start:end] - sound[start:end]))} | dimi:{np.min(np.abs(samples[start:end] - sound[start:end]))}")
+    # print("end")
+    if orig:
+        out = sound
+    else:
+        out = noise
+
+    return samples.reshape([-1, 1]), out.reshape([-1, 1])
+
+class DatasetSoft:
+    def __init__(self, songs, s_size=16384 * 24, steps=10, batch_size=1, noise_ratio=0.5, random_seed=0, orig=False, info=False):
+        seed(random_seed)
+        self.s_size = s_size
+        self.steps = steps
+        self.batch_size = batch_size
+        self.noise_ratio = noise_ratio
+        self.orig = orig
+        self.movs = s_size // steps
+        self.idx = 0
+        self.X = np.empty([batch_size, s_size, 1], dtype=np.float32)
+        self.Y = np.empty([batch_size, s_size, 1], dtype=np.float32)
+        self.lock = Lock()
+        self.generate = False
+
+        n_songs = len(songs)
+        songs_len = [None] * n_songs
+        for idx, song in enumerate(songs):
+            songs_len[idx] = wavfile.read(f'./music/{song}.wav')[1].astype(np.float32).shape[0]
+            if info:
+                print(f"Loading songs: {idx}/{n_songs}", end="\r")
+        if info:
+            print(f"Loading songs: {n_songs}/{n_songs}")
+
+        songs_composition = [((song) // self.movs) // batch_size for song in songs_len]
+        self.data_len = sum(songs_composition)
+
+        self.shufle = [(idx, sample) for idx, song_len in enumerate(songs_composition) for sample in range(song_len)]
+        shuffle(self.shufle)
+
+        Thread(target=self._generate_new).start()
+
+    def __len__(self):
+        return self.data_len
+
+    def _generate_new(self):
+        while True:
+            if not self.generate:
+                start = self.shufle[self.idx * self.batch_size]
+                data = wavfile.read(f'./music/{start[0]}.wav')[1].astype(np.float32)
+                if data.ndim == 2:
+                    data = np.mean(data, axis=1)
+                data /= np.abs(data).max()
+                data = np.append(data, np.zeros([self.s_size * self.batch_size]))
+                for idx in range(self.batch_size):
+                    self.X[idx], self.Y[idx] = _get_sample_soft(start[1] * self.batch_size + idx, self.s_size, data, self.movs, self.steps, self.noise_ratio, orig=self.orig)
+                self.generate = True
+            sleep(0.00001)
+
+    def __getitem__(self, idx):
+        while not self.generate:
+            sleep(0.00001)
+        self.idx = idx
         X = self.X
         Y = self.Y
         self.lock.acquire()
@@ -221,12 +304,13 @@ class DatasetSide(Sequence):
         self.lock.release()
         return X, Y
 
+
 from time import time, sleep
 if __name__ == '__main__':
     t = time()
-    dataset = DatasetSide([0, 1], s_size=16384 * 12, steps=40, batch_size=1, noise_ratio=0.7, info=True, side_cysles=10)
+    dataset = DatasetSoft([0, 1], s_size=16384 * 12, steps=40, batch_size=3, noise_ratio=0.7, info=True)
     for i in range(10):
-        sleep(1)
+        # sleep(1)
         t = time()
         dataset[0]
         print(time() - t)
