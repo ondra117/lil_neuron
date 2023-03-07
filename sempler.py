@@ -244,7 +244,7 @@ def _get_sample_soft(idx, s_size, data, movs, steps, noise_ratio, orig=False):
 
     return samples.reshape([-1, 1]), out.reshape([-1, 1])
 
-class DatasetSoft:
+class DatasetSoft(Sequence):
     def __init__(self, songs, s_size=16384 * 24, steps=10, batch_size=1, noise_ratio=0.5, random_seed=0, orig=False, info=False):
         seed(random_seed)
         self.s_size = s_size
