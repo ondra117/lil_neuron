@@ -60,7 +60,7 @@ if side:
     dataset = DatasetSide(list(range(90)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True, side_cysles=cycles)
 else:
     # dataset = Dataset(list(range(900, 1044)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True)
-    dataset = DatasetSoft(list(range(0, 1044)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True)
+    dataset = DatasetSoft(list(range(0, 5)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True)
 
 epochs = len(dataset) // steps_per_epoch
 print(f"data: {(len(dataset) * batch_size):_}")
