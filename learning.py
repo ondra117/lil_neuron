@@ -22,7 +22,7 @@ steps = 10 # 40
 noise_ratio = 0.7
 batch_size=3
 side = False
-cycles = 20
+cycles = 10
 
 # model = wave_u_net(num_initial_filters = 12, num_layers = 6, kernel_size = 10, input_size = s_size, output_type = "single")
 
