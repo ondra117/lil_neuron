@@ -64,7 +64,7 @@ while i * dataset.movs + s_size < sound.shape[1]:
         noise = model.predict([sound[:, s_idx:i * dataset.movs + s_size, :], side_input], verbose = 0)
     else:
         noise = model.predict(sound[:, i * dataset.movs:i * dataset.movs + s_size, :], verbose = 0)
-    sound[:, i * dataset.movs:i * dataset.movs + s_size // 2, :] -= noise[:s_size // 2]
+    sound[:, i * dataset.movs:i * dataset.movs + s_size // 2, :] -= noise[:, :s_size // 2, :]
     t = time() - t
     gt += t
     gt /= 2
