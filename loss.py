@@ -63,7 +63,7 @@ class RegulatedLoss(Loss):
         interval /= (steps - 1)
         interval *= max_scatter * (steps - 2) / (steps - 1)
 
-        interval = np.power(interval * 2, 2) + 1
+        interval = np.power(interval, 2) + 1
 
         self.interval = tf.convert_to_tensor(interval.reshape([1, -1, 1]), dtype=tf.float32)
 
