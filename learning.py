@@ -19,7 +19,7 @@ import math
 s_size = 16384 * (24 // 2)
 steps_per_epoch = 100
 steps = 20 # 40
-noise_ratio = 0.7
+noise_ratio = 0.5
 batch_size=3
 side = False
 cycles = 10
@@ -42,7 +42,7 @@ if os.path.exists('epoch.txt'):
     with open("epoch.txt", "r") as f:
         initial_epoch = int(f.read())
 
-opt = keras.optimizers.Adam(learning_rate=0.000_05) #0.000_1 - 0.000_01
+opt = keras.optimizers.Adam(learning_rate=0.000_01) #0.000_1 - 0.000_01
 
 loss = RegulatedLoss(s_size, steps, noise_ratio)
 # loss = ScatterLoss(s_size, steps, noise_ratio)
@@ -60,7 +60,7 @@ if side:
     dataset = DatasetSide(list(range(90)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True, side_cysles=cycles)
 else:
     # dataset = Dataset(list(range(900, 1044)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True)
-    dataset = DatasetSoft(list(range(0, 500)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True)
+    dataset = DatasetSoft(list(range(0, 250)), s_size=s_size, steps=steps, batch_size=batch_size, noise_ratio=noise_ratio, orig=True, info=True)
 
 epochs = len(dataset) // steps_per_epoch
 print(f"data: {(len(dataset) * batch_size):_}")
