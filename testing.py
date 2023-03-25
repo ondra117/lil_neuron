@@ -38,7 +38,8 @@ noise = np.random.normal(0.0, 1, size=sound.shape[0])
 
 noise = noise / np.max(np.abs(noise))
 
-sound = (noise * (dataset.noise_ratio) + sound * (1 - dataset.noise_ratio))
+sound = noise
+# sound = (noise * (dataset.noise_ratio) + sound * (1 - dataset.noise_ratio))
 
 # wavfile.write("o.wav", 44000, (sound * 32767 * 0.5).astype(np.int16))
 
