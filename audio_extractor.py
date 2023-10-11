@@ -12,28 +12,8 @@ from time import sleep
 
 
 class AudioExtractor:
-    CHROMDRIVER = "C:\Program Files (x86)\chromedriver.exe"
     def __init__(self):
-        self.options = Options()
-        self.options.headless = True
-        self.driver = webdriver.Chrome(self.CHROMDRIVER, chrome_options=self.options)
-
-
-    def get_lyrics(self, title):
-        try:
-            self.driver.get("https://www.google.com/")
-            self.driver.find_element(By.ID, 'L2AGLb').click()
-            search = self.driver.find_element_by_css_selector(".gLFyf")
-            search.send_keys(f"{title} lyrics")
-            search.send_keys(Keys.ENTER)
-            lyrics = self.driver.find_elements_by_css_selector(".Z1hOCe .ujudUb span")
-            lyrics = "\n".join(list(map(lambda x: x.text, lyrics)))
-            return lyrics
-        except Exception as e:
-            return ""
-
-    def end(self):
-        self.driver.quit()
+        ...
 
     def extract(self, url):
         while True:
@@ -53,7 +33,7 @@ class AudioExtractor:
 
             song = {
                 "title":video_info["title"],
-                "lyrics":self.get_lyrics(video_info["title"]),
+                "lyrics":"",
                 "url":url
             }
 
@@ -118,4 +98,4 @@ if __name__ == '__main__':
         with open("links.json", "w") as f:
             json.dump(data, f, indent=4)
 
-    ar.end()
+    # ar.end()
