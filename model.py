@@ -81,7 +81,7 @@ def resnet_block(x, n_filters, t=None, c=None):
     return x
 
 class Unet(Model):
-    def __init__(self, input_size=(512, 1), n_filters=[32, 64, 128, 256, 512, 1024], n_resnet_blocks=2, word_dims=100, max_words=5):
+    def __init__(self, input_size=(512, 1), n_filters=[32, 64, 128, 256, 512, 1024], n_resnet_blocks=2, word_dims=100, max_words=5, strides=2):
 
         inp_sound = Input(input_size)
         time = Input(shape=(1,))
@@ -124,11 +124,17 @@ class Unet(Model):
 
         for filters in n_filters:
             gst = resnet_block(gst, n_filters=filters, c=sound_time_tokens)
-            gst += CrossAttention(heads=filters * 2)([gst, gst])
+            fft = tf.signal.fft(tf.cast(gst, dtype=tf.complex64))
+            fft_real = tf.math.real(fft)
+            fft_imag = tf.math.imag(fft)
+            fft_tokens = Concatenate()([fft_real, fft_imag])
+            fft_tokens = Dense(filters * 2)(fft_tokens)
+            fft_tokens = Activation("swish")(fft_tokens)
+            gst += CrossAttention(filters * 2)([gst, fft_tokens])
             for _ in range(n_resnet_blocks):
                 gst = resnet_block(gst, n_filters=filters)
-            conv = Conv1D(filters, 2, strides=2)(gst)
-            half = gst[:, -tf.shape(conv)[1]:]
+            conv = Conv1D(filters, strides, strides=strides)(gst)
+            half = gst[:, -tf.shape(conv)[1] // strides:]
             gst = Concatenate()([conv, half])
 
         gst = resnet_block(gst, n_filters=filters, c=sound_time_tokens)
@@ -163,7 +169,7 @@ class Unet(Model):
             for _ in range(n_resnet_blocks):
                 x = resnet_block(x, filters, t)
                 hidens.append(x)
-            x = x[:, ::2, :]
+            x = x[:, ::strides, :]
 
         x = resnet_block(x, filters, t, c)
         for _ in range(n_resnet_blocks):
@@ -186,7 +192,7 @@ class Unet(Model):
                 skip = hidens.pop()
                 x = Concatenate()([x, skip])
                 x = resnet_block(x, filters, t)
-            x = UpSampling1D()(x)
+            x = UpSampling1D(size=strides)(x)
 
         x = resnet_block(x, filters, t, c)
         for _ in range(n_resnet_blocks):

@@ -15,13 +15,15 @@ class AudioExtractor:
 
     def extract(self, url, n):
         filename = f"{n}.".zfill(6)
+        try:
+            yt = YouTube(url)
 
-        yt = YouTube(url)
+            audio_stream = yt.streams.filter(only_audio=True).first()
 
-        audio_stream = yt.streams.filter(only_audio=True).first()
-
-        audio_stream.download(output_path=output_folder, filename=f"{filename}mp4")
-
+            audio_stream.download(output_path=output_folder, filename=f"{filename}mp4")
+        except Exception as e:
+            print(e)
+            return False
         mp4_file = os.path.join(output_folder, f"{filename}mp4")
         wav_file = os.path.join(output_folder, f"{filename}wav")
 
