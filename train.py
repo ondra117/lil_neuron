@@ -7,6 +7,7 @@ from call_back import CustomCallback
 from keras.callbacks import ModelCheckpoint
 from keras.optimizers import Adam
 from dataset import Dataset
+import tensorflow as tf
 
 
 batch_size = 10
@@ -17,10 +18,16 @@ n_steps = 20
 
 opt = Adam(learning_rate=0.000_01)
 loss = "MSE"
+gpus = tf.config.list_logical_devices("GPU")
+strategy = tf.distribute.OneDeviceStrategy(gpus[0])
+# strategy = tf.distribute.experimental.CentralStorageStrategy()
+# strategy = tf.distribute.MirroredStrategy(devices=gpus, cross_device_ops=tf.distribute.HierarchicalCopyAllReduce())
+print(f"Number of devices: {strategy.num_replicas_in_sync}")
 
-model = Unet()
+with strategy.scope():
+    model = Unet()
+    model.compile(loss=loss, optimizer=opt)
 
-model.compile(loss=loss, optimizer=opt)
 model.summary()
 
 if os.path.exists('model.h5'): model.load_weights('model.h5')
