@@ -89,6 +89,10 @@ class Unet(Model):
         generated_sound = Input(shape=(None, 1))
         text_embed = Input(shape=(max_words, word_dims))
 
+        min_sound_len = strides ** len(n_filters)
+        pad_width = tf.maximum(min_sound_len - tf.shape(generated_sound)[1], 0)
+        generated_sound = tf.pad(generated_sound, [(0, 0), (pad_width, 0), (0, 0)])
+
         time_hiddens = SinePositionEncoding(word_dims)(time)
         time_hiddens = Dense(word_dims * 4)(time_hiddens)
         time_hiddens = Activation("silu")(time_hiddens)
@@ -134,7 +138,7 @@ class Unet(Model):
             for _ in range(n_resnet_blocks):
                 gst = resnet_block(gst, n_filters=filters)
             conv = Conv1D(filters, strides, strides=strides)(gst)
-            half = gst[:, -tf.shape(conv)[1] // strides:]
+            half = gst[:, tf.shape(gst)[1] - tf.shape(conv)[1]:]
             gst = Concatenate()([conv, half])
 
         gst = resnet_block(gst, n_filters=filters, c=sound_time_tokens)
